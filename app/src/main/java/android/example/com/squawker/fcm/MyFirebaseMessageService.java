@@ -1,0 +1,24 @@
+package android.example.com.squawker.fcm;
+
+import android.util.Log;
+
+import com.google.firebase.messaging.FirebaseMessagingService;
+
+// COMPLETED (1) Make a new package for your FCM service classes called "fcm"
+// COMPLETED (2) Create a new Service class that extends FirebaseInstanceIdService.
+// You'll need to implement the onTokenRefresh method. Simply have it print out
+// the new token.
+public class MyFirebaseMessageService extends FirebaseMessagingService {
+
+    private static String TAG = MyFirebaseMessageService.class.getSimpleName();
+
+    /**
+     * Called if InstanceID token is updated. This may occur if the security of
+     * the previous token had been compromised. Note that this is called when the InstanceID token
+     * is initially generated so this is where you would retrieve the token.
+     */
+    @Override
+    public void onNewToken(String token) {
+        Log.d(TAG, "Refreshed token: " + token);
+    }
+}
