@@ -15,6 +15,7 @@
 */
 package android.example.com.squawker.fcm;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
@@ -27,6 +28,7 @@ import android.example.com.squawker.provider.SquawkProvider;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -137,18 +139,28 @@ public class SquawkFirebaseMessageService extends FirebaseMessagingService {
             message = message.substring(0, NOTIFICATION_MAX_CHARACTERS) + "\u2026";
         }
 
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_duck)
-                .setContentTitle(String.format(getString(R.string.notification_message), author))
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = new NotificationChannel("0", "Instructors",
+                    NotificationManager.IMPORTANCE_DEFAULT);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "0")
+                    .setSmallIcon(R.drawable.ic_duck)
+                    .setContentTitle(String.format(getString(R.string.notification_message), author))
+                    .setContentText(message)
+                    .setAutoCancel(true)
+                    .setSound(defaultSoundUri)
+                    .setContentIntent(pendingIntent);
+
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            if(notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+                notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+            }
+        }
     }
 }
